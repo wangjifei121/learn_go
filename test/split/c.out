@@ -1,0 +1,4 @@
+mode: set
+basic_lesson/test/split/split.go:8.51,10.11 2 1
+basic_lesson/test/split/split.go:15.2,16.8 2 1
+basic_lesson/test/split/split.go:10.11,14.3 3 1
