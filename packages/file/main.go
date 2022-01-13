@@ -90,21 +90,83 @@ func bufioReadLine() {
 		fmt.Print(line)
 	}
 }
+
 //ioutil.ReadFile读取整个文件
 //io/ioutil包的ReadFile方法能够读取完整的文件，只需要将文件名作为参数传入
-func ioutilRead(){
+func ioutilRead() {
 	content, err := ioutil.ReadFile("./main.go")
-	if err != nil{
+	if err != nil {
 		fmt.Println("ioutil read fill error:", err)
 		return
 	}
 	fmt.Println(string(content))
 }
 
+//Write和WriteString
+func write() {
+	file, err := os.OpenFile("xx.txt", os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0666)
+	if err != nil {
+		fmt.Println("open file failed, err:", err)
+		return
+	}
+	defer file.Close()
+	str := "hello 沙河"
+	file.Write([]byte(str))       //写入字节切片数据
+	file.WriteString("hello 小王子") //直接写入字符串数据
+}
+
+//bufio.NewWriter
+func bufioWrite() {
+	file, err := os.OpenFile("xx.txt", os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0666)
+	if err != nil {
+		fmt.Println("open file failed, err:", err)
+		return
+	}
+	defer file.Close()
+	writer := bufio.NewWriter(file)
+	for i := 0; i < 10; i++ {
+		writer.WriteString("hello沙河\n") //将数据先写入缓存
+	}
+	writer.Flush() //将缓存中的内容写入文件
+}
+
+//ioutil.WriteFile
+func ioutilWrite() {
+	str := "hello 沙河"
+	err := ioutil.WriteFile("./xx.txt", []byte(str), 0666)
+	if err != nil {
+		fmt.Println("write file failed, err:", err)
+		return
+	}
+}
+
+//借助io.Copy()实现一个拷贝文件函数
+func copyFile(dstName, srcName string) (written int64, err error) {
+	// 以读方式打开源文件
+	src, err := os.Open(srcName)
+	if err != nil {
+		fmt.Printf("open %s failed, err:%v.\n", srcName, err)
+		return
+	}
+	defer src.Close()
+	// 以写|创建的方式打开目标文件
+	dst, err := os.OpenFile(dstName, os.O_WRONLY|os.O_CREATE, 0644)
+	if err != nil {
+		fmt.Printf("open %s failed, err:%v.\n", dstName, err)
+		return
+	}
+	defer dst.Close()
+	return io.Copy(dst, src) //调用io.Copy()拷贝内容
+}
 
 func main() {
 	// onlyRead()
 	// rangeRead()
 	// bufioReadLine()
-	ioutilRead()
+	// ioutilRead()
+
+	// write()
+	// bufioWrite()
+	// ioutilWrite()
+	copyFile("xx.txt", "c.txt")
 }
